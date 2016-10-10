@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+  },
+  "devDependencies": {
+    "gulp": "*",
+    "gulp-jsdoc": "*",
+	"gulp-apidoc": "*",
+    "gulp-clean": "*",
+    "gulp-sequence": "*",
+    "jaguarjs-jsdoc": "*"
+  }
+}

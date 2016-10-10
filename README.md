@@ -1,1 +1,5 @@
-# jm-ajax
+ajax
+=========
+
+ajax lib for jm-* projects
+
