@@ -1,6 +1,6 @@
 {
   "name": "jm-ajax",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "a simple ajax lib support nodejs and browser",
   "main": "./lib/index",
   "scripts": {
