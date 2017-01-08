@@ -137,7 +137,7 @@ if (typeof module !== 'undefined' && module.exports) {
                 for(var key in opts){
                     params[key] = opts[key];
                 }
-                params.type = method;
+                params.type = method.toUpperCase();
                 params.contentType = params.contentType || 'application/json';
                 params.dataType = params.dataType || 'json';
                 params.timeout = params.timeout || timeout;
