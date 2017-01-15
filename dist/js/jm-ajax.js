@@ -96,6 +96,10 @@ if (typeof module !== 'undefined' && module.exports) {
                 var isPost = o.type == "POST" || o.type == "PUT";
                 if (!isPost && o.data) url += "?" + Ajax._formData(o.data);
                 xhr.open(o.type, url);
+                if(o.headers)
+                    for (var key in o.headers) {
+                        o.headers[key] && (xhr.setRequestHeader(key, o.headers[key]));
+                    }
                 if (isPost) {
                     var isJson = o.contentType.indexOf("json") >= 0;
                     data = isJson ? JSON.stringify(o.data) : Ajax._formData(o.data);
