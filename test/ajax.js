@@ -6,18 +6,18 @@ let obj = {};
 $.enableAjax(obj);
 
 $.ajax({
-    type:'get',
+    type: 'get',
     url: 'http://api.jamma.cn',
     data: {
-        name: 123
+        name: 123,
     },
     headers: {
-        'X-Forwarded-For': '128.0.0.1, 129.0.0.1'
-    }
-}, function(err, doc){
-    if(err) logger.error(err.stack);
-    if(doc) logger.info(JSON.stringify(doc));
-})
+        'X-Forwarded-For': '128.0.0.1, 129.0.0.1',
+    },
+}, function (err, doc) {
+    if (err) logger.error(err.stack);
+    if (doc) logger.info(JSON.stringify(doc));
+});
 
 let cb = (err, doc) => {
     if (err) console.log(err.stack);
@@ -27,10 +27,7 @@ let cb = (err, doc) => {
 describe('route', function () {
     it('ajax', function () {
         obj.get({
-            url: 'http://api.jamma.cn/'
-        }, cb)
-
+            url: 'http://api.jamma.cn/',
+        }, cb);
     });
-
-
 });

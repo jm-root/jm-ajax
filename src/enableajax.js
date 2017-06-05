@@ -49,11 +49,9 @@ export default function ($) {
                         errorThrown = errorThrown || new Error(s);
                         logger.debug('failed. ' + s);
                         if (cb) cb(errorThrown, Err.FA_NETWORK);
-                    }
+                    };
                 $.ajax(params);
             };
         });
-    }
-}
-;
-
+    };
+};

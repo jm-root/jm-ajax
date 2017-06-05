@@ -69,7 +69,6 @@ var logger = _jmLogger2.default.getLogger('jm:ajax');
          *  timeout: 设置默认超时检测, 单位毫秒, 默认0代表不检测超时
          * }
  */
-
 ;
 module.exports = exports['default'];
 },{"jm-err":4,"jm-logger":5}],2:[function(require,module,exports){
@@ -84,10 +83,6 @@ var _jmErr = require('jm-err');
 
 var _jmErr2 = _interopRequireDefault(_jmErr);
 
-var _jmLogger = require('jm-logger');
-
-var _jmLogger2 = _interopRequireDefault(_jmLogger);
-
 var _enableajax = require('./enableajax');
 
 var _enableajax2 = _interopRequireDefault(_enableajax);
@@ -95,7 +90,6 @@ var _enableajax2 = _interopRequireDefault(_enableajax);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Err = _jmErr2.default.Err;
-var logger = _jmLogger2.default.getLogger('jm:ajax');
 
 var $ = {};
 (function ($) {
@@ -125,22 +119,21 @@ var $ = {};
     };
 
     var Ajax = {};
-    var nativeForEach = Array.prototype.forEach,
-        _each = utils.each,
-        _extend = utils.extend;
+    var nativeForEach = Array.prototype.forEach;
+    var _extend = utils.extend;
 
     Ajax.xhr = function () {
         return new XMLHttpRequest();
     };
     Ajax._xhrResp = function (xhr) {
-        switch (xhr.getResponseHeader("Content-Type").split(";")[0]) {
-            case "text/xml":
+        switch (xhr.getResponseHeader('Content-Type').split(';')[0]) {
+            case 'text/xml':
                 return xhr.responseXML;
-            case "text/json":
-            case "application/json":
-            case "text/javascript":
-            case "application/javascript":
-            case "application/x-javascript":
+            case 'text/json':
+            case 'application/json':
+            case 'text/javascript':
+            case 'application/javascript':
+            case 'application/x-javascript':
                 try {
                     return JSON.parse(xhr.responseText);
                 } catch (e) {
@@ -151,21 +144,29 @@ var $ = {};
         }
     };
     Ajax._formData = function (o) {
-        var kvps = [],
-            regEx = /%20/g;
+        var kvps = [];
+        var regEx = /%20/g;
         for (var k in o) {
-            if (o[k] != undefined && o[k] != null) kvps.push(encodeURIComponent(k).replace(regEx, "+") + "=" + encodeURIComponent(o[k].toString()).replace(regEx, "+"));
+            if (o[k] != undefined && o[k] != null) kvps.push(encodeURIComponent(k).replace(regEx, '+') + '=' + encodeURIComponent(o[k].toString()).replace(regEx, '+'));
         }
         return kvps.join('&');
     };
     Ajax.ajax = function (o) {
-        var xhr = Ajax.xhr(),
-            timer = null,
-            n = 0;
+        var xhr = Ajax.xhr();
+        var timer = null;
+        var n = 0;
         if (typeof xhr.open !== 'function') return;
-        o = _extend({ userAgent: "XMLHttpRequest", lang: "en", type: "GET", data: null, contentType: "application/x-www-form-urlencoded" }, o);
+        o = _extend({
+            userAgent: 'XMLHttpRequest',
+            lang: 'en',
+            type: 'GET',
+            data: null,
+            contentType: 'application/x-www-form-urlencoded'
+        }, o);
         if (o.timeout) timer = setTimeout(function () {
-            o.error.timeout = true;xhr.abort();if (o.timeoutFn) o.timeoutFn(o.url);
+            o.error.timeout = true;
+            xhr.abort();
+            if (o.timeoutFn) o.timeoutFn(o.url);
         }, o.timeout);
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
@@ -179,19 +180,21 @@ var $ = {};
                 if (o.complete) o.complete(Ajax._xhrResp(xhr), xhr, xhr.statusText);
             } else if (o.progress) o.progress(++n);
         };
-        var url = o.url,
-            data = null;
+        var url = o.url;
+        var data = null;
         o.type = (o.type || 'GET').toUpperCase();
-        var isPost = o.type == "POST" || o.type == "PUT";
-        if (!isPost && o.data) url += "?" + Ajax._formData(o.data);
+        var isPost = o.type == 'POST' || o.type == 'PUT';
+        if (!isPost && o.data) url += '?' + Ajax._formData(o.data);
         xhr.open(o.type, url);
-        if (o.headers) for (var key in o.headers) {
-            o.headers[key] && xhr.setRequestHeader(key, o.headers[key]);
+        if (o.headers) {
+            for (var key in o.headers) {
+                o.headers[key] && xhr.setRequestHeader(key, o.headers[key]);
+            }
         }
         if (isPost) {
-            var isJson = o.contentType.indexOf("json") >= 0;
+            var isJson = o.contentType.indexOf('json') >= 0;
             data = isJson ? JSON.stringify(o.data) : Ajax._formData(o.data);
-            xhr.setRequestHeader("Content-Type", isJson ? "application/json" : "application/x-www-form-urlencoded");
+            xhr.setRequestHeader('Content-Type', isJson ? 'application/json' : 'application/x-www-form-urlencoded');
         }
         if (data) {
             xhr.send(data);
@@ -211,7 +214,7 @@ if (typeof global !== 'undefined' && global) {
 exports.default = $;
 module.exports = exports['default'];
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./enableajax":1,"jm-err":4,"jm-logger":5}],3:[function(require,module,exports){
+},{"./enableajax":1,"jm-err":4}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
