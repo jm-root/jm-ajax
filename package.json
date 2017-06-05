@@ -1,10 +1,10 @@
 {
   "name": "jm-ajax",
-  "version": "0.0.11",
+  "version": "1.0.0",
   "description": "a simple ajax lib support nodejs and browser",
   "main": "./lib/index",
   "scripts": {
-    "test": "node test"
+    "test": "node node_modules/babel-cli/bin/babel-node ./node_modules/mocha/bin/_mocha test"
   },
   "repository": {
     "type": "git",
@@ -23,19 +23,31 @@
   },
   "homepage": "https://github.com/jm-root/jm-ajax",
   "dependencies": {
-    "jm-core": "^0.0.7",
+    "jm-err": "^0.0.2",
+    "jm-logger": "^0.0.1",
     "najax": "^1.0.2"
   },
   "devDependencies": {
     "bluebird": "^3.5.0",
+    "babel-cli": "^6.24.1",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-env": "^1.5.1",
+    "benchmark": "^2.1.4",
+    "chai": "^4.0.0",
+    "eslint-config-google": "^0.7.1",
     "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-browserify": "^0.5.1",
     "gulp-clean": "^0.3.2",
     "gulp-concat": "^2.6.1",
+    "gulp-eslint": "^3.0.1",
+    "gulp-jsdoc3": "^1.0.1",
     "gulp-jshint": "^2.0.4",
     "gulp-rename": "^1.2.2",
     "gulp-sequence": "^0.4.6",
-    "gulp-uglify": "^2.1.2",
+    "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",
-    "jshint": "^2.9.4"
+    "jshint": "^2.9.4",
+    "mocha": "^3.4.2"
   }
 }

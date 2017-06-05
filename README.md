@@ -1,5 +1,3 @@
-ajax
-=========
+# jm-ajax
 
-ajax lib for jm-* projects
-
+a simple ajax lib support nodejs and browser
