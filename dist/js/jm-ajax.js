@@ -208,7 +208,12 @@ var $ = {};
 $.enableAjax = (0, _enableajax2.default)($);
 
 if (typeof global !== 'undefined' && global) {
-    global.jm && (global.jm.enableAjax = $.enableAjax);
+    global.jm || (global.jm = {});
+    var jm = global.jm;
+    if (!jm.ajax) {
+        jm.ajax = $.ajax;
+        jm.enableAjax = $.enableAjax;
+    }
 }
 
 exports.default = $;
