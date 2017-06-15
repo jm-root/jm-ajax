@@ -1,3 +1,7 @@
 .git
 .idea
 .svn
+examples
+src
+bench
+docs
