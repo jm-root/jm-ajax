@@ -1,14 +1,13 @@
-var jm = jm || {};
 if (typeof module !== 'undefined' && module.exports) {
-    jm = require('../lib');
+    require('../lib');
 }
 
 (function(){
-    var logger = jm.logger;
+    var logger = console;
     var obj = {};
     jm.enableAjax(obj, {timeout: 5000});
     obj.get({
-        url: 'http://localhost:3000/users/123',
+        url: 'http://api.jamma.cn',
         data: {
             name: 123
         },
@@ -17,6 +16,6 @@ if (typeof module !== 'undefined' && module.exports) {
         }
     }, function(err, doc){
         if(err) logger.error(err.stack);
-        if(doc) logger.debug(JSON.stringify(doc));
+        if(doc) logger.info(JSON.stringify(doc));
     })
 })();
