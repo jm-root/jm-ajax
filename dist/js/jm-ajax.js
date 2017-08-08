@@ -71,7 +71,7 @@ var logger = _jmLogger2.default.getLogger('jm:ajax');
  */
 ;
 module.exports = exports['default'];
-},{"jm-err":4,"jm-logger":5}],2:[function(require,module,exports){
+},{"jm-err":3,"jm-logger":4}],2:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -219,7 +219,8 @@ if (typeof global !== 'undefined' && global) {
 exports.default = $;
 module.exports = exports['default'];
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./enableajax":1,"jm-err":4}],3:[function(require,module,exports){
+},{"./enableajax":1,"jm-err":3}],3:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -406,63 +407,49 @@ var disableErr = function disableErr(obj) {
     delete obj.errMsg;
 };
 
-/**
- * module usable
- * @param {Object} obj target object
- * @param {String} [name] name to bind
- * @return {{name: string, unuse: unuse}}
- */
-var moduleErr = function moduleErr(obj) {
-    var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Err';
-
-    enableErr(obj, name);
-
-    return {
-        name: name,
-        unuse: function unuse(obj) {
-            disableErr(obj, name);
-        }
-    };
-};
-
-exports.default = {
+var $ = {
     Err: Err,
     errMsg: errMsg,
     err: err,
     enableErr: enableErr,
-    disableErr: disableErr,
-    moduleErr: moduleErr
+    disableErr: disableErr
 };
+
+if (typeof global !== 'undefined' && global) {
+    global.jm || (global.jm = {});
+    var jm = global.jm;
+    if (!jm.enableErr) {
+        enableErr(jm);
+        for (var key in $) {
+            jm[key] = $[key];
+        }
+    }
+}
+
+exports.default = $;
 module.exports = exports['default'];
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],4:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _err = require('./err');
-
-var _err2 = _interopRequireDefault(_err);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = _err2.default;
-module.exports = exports['default'];
-},{"./err":3}],5:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+/**
+ * logger module.
+ * @module logger
+ */
+
 var getLogger = function getLogger(loggerCategoryName) {
     console.debug || (console.debug = console.log);
     return console;
 };
 
-var moduleLogger = function moduleLogger(obj) {
-    var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'logger';
+var moduleLogger = function moduleLogger() {
+    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'logger';
 
+    var obj = this;
     obj.getLogger = getLogger;
     obj.logger = getLogger();
     return {
@@ -474,10 +461,23 @@ var moduleLogger = function moduleLogger(obj) {
     };
 };
 
-exports.default = {
+var $ = {
     logger: getLogger(),
     getLogger: getLogger,
     moduleLogger: moduleLogger
 };
+
+if (typeof global !== 'undefined' && global) {
+    global.jm || (global.jm = {});
+    var jm = global.jm;
+    if (!jm.logger) {
+        for (var key in $) {
+            jm[key] = $[key];
+        }
+    }
+}
+
+exports.default = $;
 module.exports = exports['default'];
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}]},{},[2])
