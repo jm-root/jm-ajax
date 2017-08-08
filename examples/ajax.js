@@ -1,5 +1,5 @@
 if (typeof module !== 'undefined' && module.exports) {
-    require('../lib');
+    require('../');
 }
 
 (function(){

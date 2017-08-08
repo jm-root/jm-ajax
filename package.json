@@ -2,7 +2,7 @@
   "name": "jm-ajax",
   "version": "1.0.1",
   "description": "a simple ajax lib support nodejs and browser",
-  "main": "./lib/index",
+  "main": "./index",
   "scripts": {
     "test": "node node_modules/babel-cli/bin/babel-node ./node_modules/mocha/bin/_mocha test"
   },
