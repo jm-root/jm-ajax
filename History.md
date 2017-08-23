@@ -1,5 +1,9 @@
 # History
 
+## 1.0.3 / 2017-08-24
+ajax fail
+eslint format
+
 ## 1.0.2 / 2017-08-09
 optimize es6 support
 

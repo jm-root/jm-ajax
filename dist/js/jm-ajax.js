@@ -2,47 +2,52 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 exports.default = function ($) {
-    return function (obj, opts) {
-        opts = opts || {};
-        var ignoreDocErr = opts.ignoreDocErr || false;
-        var types = opts.types || ['get', 'post', 'put', 'delete'];
-        var timeout = opts.timeout || 0;
-        if (!Array.isArray(types)) {
-            types = [types];
+  return function (obj, opts) {
+    opts = opts || {};
+    var ignoreDocErr = opts.ignoreDocErr || false;
+    var types = opts.types || ['get', 'post', 'put', 'delete'];
+    var timeout = opts.timeout || 0;
+    if (!Array.isArray(types)) {
+      types = [types];
+    }
+    types.forEach(function (method) {
+      obj[method] = function (opts, cb) {
+        var params = {};
+        for (var key in opts) {
+          params[key] = opts[key];
         }
-        types.forEach(function (method) {
-            obj[method] = function (opts, cb) {
-                var params = {};
-                for (var key in opts) {
-                    params[key] = opts[key];
-                }
-                params.type = method.toUpperCase();
-                params.contentType = params.contentType || 'application/json';
-                params.dataType = params.dataType || 'json';
-                params.timeout = params.timeout || timeout;
-                params.success = params.success || function (doc) {
-                    if (!cb) return;
-                    var err = null;
-                    if (doc && doc.err && !ignoreDocErr) {
-                        err = new Error(doc.msg || doc.err);
-                    }
-                    cb(err, doc);
-                };
-                params.error = params.error || function (XMLHttpRequest, textStatus, errorThrown) {
-                    var s = method.toUpperCase() + ' ' + opts.url;
-                    if (params.error.timeout) errorThrown = new Error('timeout');
-                    errorThrown = errorThrown || new Error(s);
-                    logger.debug('failed. ' + s);
-                    if (cb) cb(errorThrown, Err.FA_NETWORK);
-                };
-                $.ajax(params);
-            };
-        });
-    };
+        params.type = method.toUpperCase();
+        params.contentType = params.contentType || 'application/json';
+        params.dataType = params.dataType || 'json';
+        params.timeout = params.timeout || timeout;
+        params.success = params.success || function (doc) {
+          if (!cb) return;
+          var err = null;
+          if (doc && doc.err) {
+            logger.debug(method.toUpperCase() + ' failed. request: ' + JSON.stringify(opts) + ' response: ' + JSON.stringify(doc));
+            if (!ignoreDocErr) err = new Error(doc.msg || doc.err);
+          }
+          cb(err, doc);
+        };
+        params.error = params.error || function (XMLHttpRequest, textStatus, errorThrown) {
+          var s = method.toUpperCase() + ' ' + opts.url;
+          var doc = Err.FA_NETWORK;
+          if (params.error.timeout) {
+            errorThrown = new Error('timeout');
+            doc = Err.FA_TIMEOUT;
+          }
+          errorThrown = errorThrown || new Error(s);
+          logger.debug(method.toUpperCase() + ' failed. request: ' + JSON.stringify(opts) + ' response: ' + JSON.stringify(doc));
+          if (cb) cb(errorThrown, doc);
+        };
+        $.ajax(params);
+      };
+    });
+  };
 };
 
 var _jmErr = require('jm-err');
@@ -71,12 +76,12 @@ var logger = _jmLogger2.default.getLogger('jm:ajax');
  */
 ;
 module.exports = exports['default'];
-},{"jm-err":3,"jm-logger":4}],2:[function(require,module,exports){
+},{"jm-err":3,"jm-logger":6}],2:[function(require,module,exports){
 (function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _jmErr = require('jm-err');
@@ -93,127 +98,135 @@ var Err = _jmErr2.default.Err;
 
 var $ = {};
 (function ($) {
-    var utils = {
-        extend: function extend(o) {
-            utils.each(Array.prototype.slice.call(arguments, 1), function (a) {
-                for (var p in a) {
-                    if (a[p] !== void 0) o[p] = a[p];
-                }
-            });
-            return o;
-        },
+  var utils = {
+    extend: function extend(o) {
+      utils.each(Array.prototype.slice.call(arguments, 1), function (a) {
+        for (var p in a) {
+          if (a[p] !== void 0) o[p] = a[p];
+        }
+      });
+      return o;
+    },
 
-        each: function each(o, fn, ctx) {
-            if (o === null) return;
-            if (nativeForEach && o.forEach === nativeForEach) o.forEach(fn, ctx);else if (o.length === +o.length) {
-                for (var i = 0, l = o.length; i < l; i++) {
-                    if (i in o && fn.call(ctx, o[i], i, o) === breaker) return;
-                }
-            } else {
-                for (var key in o) {
-                    if (hasOwnProperty.call(o, key)) if (fn.call(ctx, o[key], key, o) === breaker) return;
-                }
-            }
+    each: function each(o, fn, ctx) {
+      if (o === null) return;
+      if (nativeForEach && o.forEach === nativeForEach) {
+        o.forEach(fn, ctx);
+      } else if (o.length === +o.length) {
+        for (var i = 0, l = o.length; i < l; i++) {
+          if (i in o && fn.call(ctx, o[i], i, o) === breaker) return;
         }
+      } else {
+        for (var key in o) {
+          if (hasOwnProperty.call(o, key)) {
+            if (fn.call(ctx, o[key], key, o) === breaker) return;
+          }
+        }
+      }
+    }
 
-    };
+  };
 
-    var Ajax = {};
-    var nativeForEach = Array.prototype.forEach;
-    var _extend = utils.extend;
+  var Ajax = {};
+  var nativeForEach = Array.prototype.forEach;
+  var _extend = utils.extend;
 
-    Ajax.xhr = function () {
-        return new XMLHttpRequest();
+  Ajax.xhr = function () {
+    return new XMLHttpRequest();
+  };
+  Ajax._xhrResp = function (xhr) {
+    switch (xhr.getResponseHeader('Content-Type').split(';')[0]) {
+      case 'text/xml':
+        return xhr.responseXML;
+      case 'text/json':
+      case 'application/json':
+      case 'text/javascript':
+      case 'application/javascript':
+      case 'application/x-javascript':
+        try {
+          return JSON.parse(xhr.responseText);
+        } catch (e) {
+          return Err.FAIL;
+        }
+      default:
+        return xhr.responseText;
+    }
+  };
+  Ajax._formData = function (o) {
+    var kvps = [];
+    var regEx = /%20/g;
+    for (var k in o) {
+      if (o[k] != undefined && o[k] != null) {
+        kvps.push(encodeURIComponent(k).replace(regEx, '+') + '=' + encodeURIComponent(o[k].toString()).replace(regEx, '+'));
+      }
+    }
+    return kvps.join('&');
+  };
+  Ajax.ajax = function (o) {
+    var xhr = Ajax.xhr();
+    var timer = null;
+    var n = 0;
+    if (typeof xhr.open !== 'function') return;
+    o = _extend({
+      userAgent: 'XMLHttpRequest',
+      lang: 'en',
+      type: 'GET',
+      data: null,
+      contentType: 'application/x-www-form-urlencoded'
+    }, o);
+    if (o.timeout) {
+      timer = setTimeout(function () {
+        o.error.timeout = true;
+        xhr.abort();
+        if (o.timeoutFn) o.timeoutFn(o.url);
+      }, o.timeout);
+    }
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4) {
+        if (timer != null) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
+          if (o.success) o.success(Ajax._xhrResp(xhr));
+        } else if (o.error) o.error(xhr, xhr.status, xhr.statusText);
+        if (o.complete) o.complete(Ajax._xhrResp(xhr), xhr, xhr.statusText);
+      } else if (o.progress) o.progress(++n);
     };
-    Ajax._xhrResp = function (xhr) {
-        switch (xhr.getResponseHeader('Content-Type').split(';')[0]) {
-            case 'text/xml':
-                return xhr.responseXML;
-            case 'text/json':
-            case 'application/json':
-            case 'text/javascript':
-            case 'application/javascript':
-            case 'application/x-javascript':
-                try {
-                    return JSON.parse(xhr.responseText);
-                } catch (e) {
-                    return Err.FAIL;
-                }
-            default:
-                return xhr.responseText;
-        }
-    };
-    Ajax._formData = function (o) {
-        var kvps = [];
-        var regEx = /%20/g;
-        for (var k in o) {
-            if (o[k] != undefined && o[k] != null) kvps.push(encodeURIComponent(k).replace(regEx, '+') + '=' + encodeURIComponent(o[k].toString()).replace(regEx, '+'));
-        }
-        return kvps.join('&');
-    };
-    Ajax.ajax = function (o) {
-        var xhr = Ajax.xhr();
-        var timer = null;
-        var n = 0;
-        if (typeof xhr.open !== 'function') return;
-        o = _extend({
-            userAgent: 'XMLHttpRequest',
-            lang: 'en',
-            type: 'GET',
-            data: null,
-            contentType: 'application/x-www-form-urlencoded'
-        }, o);
-        if (o.timeout) timer = setTimeout(function () {
-            o.error.timeout = true;
-            xhr.abort();
-            if (o.timeoutFn) o.timeoutFn(o.url);
-        }, o.timeout);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                if (timer != null) {
-                    clearTimeout(timer);
-                    timer = null;
-                }
-                if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
-                    if (o.success) o.success(Ajax._xhrResp(xhr));
-                } else if (o.error) o.error(xhr, xhr.status, xhr.statusText);
-                if (o.complete) o.complete(Ajax._xhrResp(xhr), xhr, xhr.statusText);
-            } else if (o.progress) o.progress(++n);
-        };
-        var url = o.url;
-        var data = null;
-        o.type = (o.type || 'GET').toUpperCase();
-        var isPost = o.type == 'POST' || o.type == 'PUT';
-        if (!isPost && o.data) url += '?' + Ajax._formData(o.data);
-        xhr.open(o.type, url);
-        if (o.headers) {
-            for (var key in o.headers) {
-                o.headers[key] && xhr.setRequestHeader(key, o.headers[key]);
-            }
-        }
-        if (isPost) {
-            var isJson = o.contentType.indexOf('json') >= 0;
-            data = isJson ? JSON.stringify(o.data) : Ajax._formData(o.data);
-            xhr.setRequestHeader('Content-Type', isJson ? 'application/json' : 'application/x-www-form-urlencoded');
-        }
-        if (data) {
-            xhr.send(data);
-        } else {
-            xhr.send();
-        }
-    };
-    $.ajax = Ajax.ajax;
+    var url = o.url;
+    var data = null;
+    o.type = (o.type || 'GET').toUpperCase();
+    var isPost = o.type === 'POST' || o.type === 'PUT';
+    if (!isPost && o.data) url += '?' + Ajax._formData(o.data);
+    xhr.open(o.type, url);
+    if (o.headers) {
+      for (var key in o.headers) {
+        o.headers[key] && xhr.setRequestHeader(key, o.headers[key]);
+      }
+    }
+    if (isPost) {
+      var isJson = o.contentType.indexOf('json') >= 0;
+      data = isJson ? JSON.stringify(o.data) : Ajax._formData(o.data);
+      xhr.setRequestHeader('Content-Type', isJson ? 'application/json' : 'application/x-www-form-urlencoded');
+    }
+    if (data) {
+      xhr.send(data);
+    } else {
+      xhr.send();
+    }
+  };
+  $.ajax = Ajax.ajax;
 })($);
 
 $.enableAjax = (0, _enableajax2.default)($);
 
 if (typeof global !== 'undefined' && global) {
-    global.jm || (global.jm = {});
-    var jm = global.jm;
-    if (!jm.ajax) {
-        jm.ajax = $.ajax;
-        jm.enableAjax = $.enableAjax;
-    }
+  global.jm || (global.jm = {});
+  var jm = global.jm;
+  if (!jm.ajax) {
+    jm.ajax = $.ajax;
+    jm.enableAjax = $.enableAjax;
+  }
 }
 
 exports.default = $;
@@ -226,10 +239,12 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-/**
- * err module.
- * @module err
- */
+
+var _locale = require('./locale');
+
+var _locale2 = _interopRequireDefault(_locale);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * common error defines
@@ -281,6 +296,16 @@ var Err = {
         msg: 'Not Ready'
     },
 
+    FA_NOTEXISTS: {
+        err: 9,
+        msg: 'Not Exists'
+    },
+
+    FA_EXISTS: {
+        err: 8,
+        msg: 'Already Exists'
+    },
+
     OK: {
         err: 200,
         msg: 'OK'
@@ -315,7 +340,12 @@ var Err = {
         err: 503,
         msg: 'Service Unavailable'
     }
-};
+}; /**
+    * err module.
+    * @module err
+    */
+
+Err.t = _locale2.default;
 
 /**
  * return message from template
@@ -429,7 +459,64 @@ if (typeof global !== 'undefined' && global) {
 exports.default = $;
 module.exports = exports['default'];
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],4:[function(require,module,exports){
+},{"./locale":4}],4:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function (msg, lng) {
+    if (!lng || !lngs[lng]) return null;
+    return lngs[lng][msg];
+};
+
+var _zh_CN = require('./zh_CN');
+
+var _zh_CN2 = _interopRequireDefault(_zh_CN);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var lngs = {
+    zh_CN: _zh_CN2.default
+};
+
+/**
+ * translate
+ * @param {string} msg - msg to be translate
+ * @param {string} lng - language
+ * @return {String | null}
+ */
+;
+module.exports = exports['default'];
+},{"./zh_CN":5}],5:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+    'Success': '成功',
+    'Fail': '失败',
+    'System Error': '系统错误',
+    'Network Error': '网络错误',
+    'Parameter Error': '参数错误',
+    'Busy': '忙',
+    'Time Out': '超时',
+    'Abort': '中止',
+    'Not Ready': '未准备好',
+    'Not Exists': '不存在',
+    'Already Exists': '已存在',
+    'OK': 'OK',
+    'Bad Request': '错误请求',
+    'Unauthorized': '未验证',
+    'Forbidden': '无权限',
+    'Not Found': '未找到',
+    'Internal Server Error': '服务器内部错误',
+    'Service Unavailable': '无效服务'
+};
+module.exports = exports['default'];
+},{}],6:[function(require,module,exports){
 (function (global){
 'use strict';
 
