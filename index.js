@@ -1,5 +1,5 @@
 if (typeof XMLHttpRequest !== 'undefined') {
-    module.exports = require('./lib/browser');
+  module.exports = require('./lib/browser')
 } else {
-    module.exports = require('./lib');
+  module.exports = require('./lib')
 }

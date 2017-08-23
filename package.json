@@ -1,6 +1,6 @@
 {
   "name": "jm-ajax",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a simple ajax lib support nodejs and browser",
   "scripts": {
     "test": "node node_modules/babel-cli/bin/babel-node ./node_modules/mocha/bin/_mocha test"
@@ -33,7 +33,11 @@
     "babel-preset-env": "^1.5.1",
     "benchmark": "^2.1.4",
     "chai": "^4.0.0",
-    "eslint-config-google": "^0.7.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-browserify": "^0.5.1",
