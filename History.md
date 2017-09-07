@@ -1,5 +1,9 @@
 # History
 
+## 1.0.4 / 2017-09-07
+support promise
+remove ignoreDocErr
+
 ## 1.0.3 / 2017-08-24
 ajax fail
 eslint format

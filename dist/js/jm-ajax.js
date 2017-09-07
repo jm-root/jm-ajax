@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function ($) {
-  return function (obj, opts) {
-    opts = opts || {};
-    var ignoreDocErr = opts.ignoreDocErr || false;
+  return function (obj) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
     var types = opts.types || ['get', 'post', 'put', 'delete'];
     var timeout = opts.timeout || 0;
     if (!Array.isArray(types)) {
@@ -16,35 +16,75 @@ exports.default = function ($) {
     }
     types.forEach(function (method) {
       obj[method] = function (opts, cb) {
-        var params = {};
-        for (var key in opts) {
-          params[key] = opts[key];
+        if (typeof Promise !== 'undefined') {
+          if (cb) {
+            this[method](opts).then(function (doc) {
+              cb(null, doc);
+            }).catch(function (err) {
+              cb(err);
+            });
+            return this;
+          }
+
+          return new Promise(function (resolve, reject) {
+            var params = {};
+            for (var key in opts) {
+              params[key] = opts[key];
+            }
+            params.type = method.toUpperCase();
+            params.contentType = params.contentType || 'application/json';
+            params.dataType = params.dataType || 'json';
+            params.timeout = params.timeout || timeout;
+            params.success = params.success || function (doc) {
+              if (doc && doc.err) {
+                var s = method.toUpperCase() + ' ' + opts.url;
+                logger.debug(s + ' failed. request: ' + JSON.stringify(opts) + ' response: ' + JSON.stringify(doc));
+              }
+              resolve(doc);
+            };
+            params.error = params.error || function (XMLHttpRequest, textStatus, errorThrown) {
+              var s = method.toUpperCase() + ' ' + opts.url;
+              if (params.error.timeout) {
+                errorThrown = new Error(Err.FA_TIMEOUT.msg);
+                errorThrown.code = Err.FA_TIMEOUT.err;
+              }
+              errorThrown || (errorThrown = new Error(s));
+              logger.debug(s + ' failed. request: ' + JSON.stringify(opts));
+              reject(errorThrown);
+            };
+            $.ajax(params);
+          });
+        } else {
+          var params = {};
+          for (var key in opts) {
+            params[key] = opts[key];
+          }
+          params.type = method.toUpperCase();
+          params.contentType = params.contentType || 'application/json';
+          params.dataType = params.dataType || 'json';
+          params.timeout = params.timeout || timeout;
+          params.success = params.success || function (doc) {
+            if (!cb) return;
+            if (doc && doc.err) {
+              var s = method.toUpperCase() + ' ' + opts.url;
+              logger.debug(s + ' failed. request: ' + JSON.stringify(opts) + ' response: ' + JSON.stringify(doc));
+            }
+            cb(null, doc);
+          };
+          params.error = params.error || function (XMLHttpRequest, textStatus, errorThrown) {
+            var s = method.toUpperCase() + ' ' + opts.url;
+            var doc = Err.FA_NETWORK;
+            if (params.error.timeout) {
+              errorThrown = new Error(Err.FA_TIMEOUT.msg);
+              errorThrown.code = Err.FA_TIMEOUT.err;
+              doc = Err.FA_TIMEOUT;
+            }
+            errorThrown || (errorThrown = new Error(s));
+            logger.debug(s + ' failed. request: ' + JSON.stringify(opts) + ' response: ' + JSON.stringify(doc));
+            if (cb) cb(errorThrown, doc);
+          };
+          $.ajax(params);
         }
-        params.type = method.toUpperCase();
-        params.contentType = params.contentType || 'application/json';
-        params.dataType = params.dataType || 'json';
-        params.timeout = params.timeout || timeout;
-        params.success = params.success || function (doc) {
-          if (!cb) return;
-          var err = null;
-          if (doc && doc.err) {
-            logger.debug(method.toUpperCase() + ' failed. request: ' + JSON.stringify(opts) + ' response: ' + JSON.stringify(doc));
-            if (!ignoreDocErr) err = new Error(doc.msg || doc.err);
-          }
-          cb(err, doc);
-        };
-        params.error = params.error || function (XMLHttpRequest, textStatus, errorThrown) {
-          var s = method.toUpperCase() + ' ' + opts.url;
-          var doc = Err.FA_NETWORK;
-          if (params.error.timeout) {
-            errorThrown = new Error('timeout');
-            doc = Err.FA_TIMEOUT;
-          }
-          errorThrown = errorThrown || new Error(s);
-          logger.debug(method.toUpperCase() + ' failed. request: ' + JSON.stringify(opts) + ' response: ' + JSON.stringify(doc));
-          if (cb) cb(errorThrown, doc);
-        };
-        $.ajax(params);
       };
     });
   };
@@ -61,7 +101,7 @@ var _jmLogger2 = _interopRequireDefault(_jmLogger);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Err = _jmErr2.default.Err;
-var logger = _jmLogger2.default.getLogger('jm:ajax');
+var logger = _jmLogger2.default.getLogger('jm-ajax');
 
 /**
  * 为obj对象增加快捷ajax接口
@@ -70,7 +110,6 @@ var logger = _jmLogger2.default.getLogger('jm:ajax');
  * @example
  * opts参数:{
          *  types: 支持的请求类型, 默认['get', 'post', 'put', 'delete']
-         *  ignoreDocErr: 是否忽略返回的doc中的err(可选, 默认false, 不忽略, 检测doc.err不为空时, 生成Error)
          *  timeout: 设置默认超时检测, 单位毫秒, 默认0代表不检测超时
          * }
  */
@@ -84,17 +123,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _jmErr = require('jm-err');
-
-var _jmErr2 = _interopRequireDefault(_jmErr);
-
 var _enableajax = require('./enableajax');
 
 var _enableajax2 = _interopRequireDefault(_enableajax);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Err = _jmErr2.default.Err;
 
 var $ = {};
 (function ($) {
@@ -143,11 +176,7 @@ var $ = {};
       case 'text/javascript':
       case 'application/javascript':
       case 'application/x-javascript':
-        try {
-          return JSON.parse(xhr.responseText);
-        } catch (e) {
-          return Err.FAIL;
-        }
+        return JSON.parse(xhr.responseText);
       default:
         return xhr.responseText;
     }
@@ -232,7 +261,7 @@ if (typeof global !== 'undefined' && global) {
 exports.default = $;
 module.exports = exports['default'];
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./enableajax":1,"jm-err":3}],3:[function(require,module,exports){
+},{"./enableajax":1}],3:[function(require,module,exports){
 (function (global){
 'use strict';
 
