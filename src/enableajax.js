@@ -22,8 +22,8 @@ export default function ($) {
       types = [types]
     }
     types.forEach(function (method) {
-      obj[method] = function (opts, cb) {
-        if ((typeof Promise) !== 'undefined') {
+      if ((typeof Promise) !== 'undefined') {
+        obj[method] = function (opts, cb) {
           if (cb) {
             this[method](opts)
               .then(function (doc) {
@@ -34,7 +34,6 @@ export default function ($) {
               })
             return this
           }
-
           return new Promise(function (resolve, reject) {
             let params = {}
             for (let key in opts) {
@@ -65,7 +64,9 @@ export default function ($) {
               }
             $.ajax(params)
           })
-        } else {
+        }
+      } else {
+        obj[method] = function (opts, cb) {
           let params = {}
           for (let key in opts) {
             params[key] = opts[key]

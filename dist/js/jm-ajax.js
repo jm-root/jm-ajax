@@ -15,8 +15,8 @@ exports.default = function ($) {
       types = [types];
     }
     types.forEach(function (method) {
-      obj[method] = function (opts, cb) {
-        if (typeof Promise !== 'undefined') {
+      if (typeof Promise !== 'undefined') {
+        obj[method] = function (opts, cb) {
           if (cb) {
             this[method](opts).then(function (doc) {
               cb(null, doc);
@@ -25,7 +25,6 @@ exports.default = function ($) {
             });
             return this;
           }
-
           return new Promise(function (resolve, reject) {
             var params = {};
             for (var key in opts) {
@@ -54,7 +53,9 @@ exports.default = function ($) {
             };
             $.ajax(params);
           });
-        } else {
+        };
+      } else {
+        obj[method] = function (opts, cb) {
           var params = {};
           for (var key in opts) {
             params[key] = opts[key];
@@ -84,8 +85,8 @@ exports.default = function ($) {
             if (cb) cb(errorThrown, doc);
           };
           $.ajax(params);
-        }
-      };
+        };
+      }
     });
   };
 };

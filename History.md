@@ -1,5 +1,8 @@
 # History
 
+## 1.0.5 / 2017-09-07
+impove perfomance
+
 ## 1.0.4 / 2017-09-07
 support promise
 remove ignoreDocErr
