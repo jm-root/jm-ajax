@@ -1,6 +1,6 @@
 {
   "name": "jm-ajax",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "a simple ajax lib support nodejs and browser",
   "scripts": {
     "test": "node node_modules/babel-cli/bin/babel-node ./node_modules/mocha/bin/_mocha test"
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/jm-root/jm-ajax",
   "dependencies": {
-    "jm-err": "^1.0.0",
+    "jm-err": "^1.0.2",
     "jm-logger": "^1.0.1",
     "najax": "^1.0.2"
   },

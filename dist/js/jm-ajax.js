@@ -267,7 +267,7 @@ module.exports = exports['default'];
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _locale = require('./locale');
@@ -281,95 +281,95 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *
  */
 var Err = {
-    SUCCESS: {
-        err: 0,
-        msg: 'Success'
-    },
+  SUCCESS: {
+    err: 0,
+    msg: 'Success'
+  },
 
-    FAIL: {
-        err: 1,
-        msg: 'Fail'
-    },
+  FAIL: {
+    err: 1,
+    msg: 'Fail'
+  },
 
-    FA_SYS: {
-        err: 2,
-        msg: 'System Error'
-    },
+  FA_SYS: {
+    err: 2,
+    msg: 'System Error'
+  },
 
-    FA_NETWORK: {
-        err: 3,
-        msg: 'Network Error'
-    },
+  FA_NETWORK: {
+    err: 3,
+    msg: 'Network Error'
+  },
 
-    FA_PARAMS: {
-        err: 4,
-        msg: 'Parameter Error'
-    },
+  FA_PARAMS: {
+    err: 4,
+    msg: 'Parameter Error'
+  },
 
-    FA_BUSY: {
-        err: 5,
-        msg: 'Busy'
-    },
+  FA_BUSY: {
+    err: 5,
+    msg: 'Busy'
+  },
 
-    FA_TIMEOUT: {
-        err: 6,
-        msg: 'Time Out'
-    },
+  FA_TIMEOUT: {
+    err: 6,
+    msg: 'Time Out'
+  },
 
-    FA_ABORT: {
-        err: 7,
-        msg: 'Abort'
-    },
+  FA_ABORT: {
+    err: 7,
+    msg: 'Abort'
+  },
 
-    FA_NOTREADY: {
-        err: 8,
-        msg: 'Not Ready'
-    },
+  FA_NOTREADY: {
+    err: 8,
+    msg: 'Not Ready'
+  },
 
-    FA_NOTEXISTS: {
-        err: 9,
-        msg: 'Not Exists'
-    },
+  FA_NOTEXISTS: {
+    err: 9,
+    msg: 'Not Exists'
+  },
 
-    FA_EXISTS: {
-        err: 8,
-        msg: 'Already Exists'
-    },
+  FA_EXISTS: {
+    err: 8,
+    msg: 'Already Exists'
+  },
 
-    OK: {
-        err: 200,
-        msg: 'OK'
-    },
+  OK: {
+    err: 200,
+    msg: 'OK'
+  },
 
-    FA_BADREQUEST: {
-        err: 400,
-        msg: 'Bad Request'
-    },
+  FA_BADREQUEST: {
+    err: 400,
+    msg: 'Bad Request'
+  },
 
-    FA_NOAUTH: {
-        err: 401,
-        msg: 'Unauthorized'
-    },
+  FA_NOAUTH: {
+    err: 401,
+    msg: 'Unauthorized'
+  },
 
-    FA_NOPERMISSION: {
-        err: 403,
-        msg: 'Forbidden'
-    },
+  FA_NOPERMISSION: {
+    err: 403,
+    msg: 'Forbidden'
+  },
 
-    FA_NOTFOUND: {
-        err: 404,
-        msg: 'Not Found'
-    },
+  FA_NOTFOUND: {
+    err: 404,
+    msg: 'Not Found'
+  },
 
-    FA_INTERNALERROR: {
-        err: 500,
-        msg: 'Internal Server Error'
-    },
+  FA_INTERNALERROR: {
+    err: 500,
+    msg: 'Internal Server Error'
+  },
 
-    FA_UNAVAILABLE: {
-        err: 503,
-        msg: 'Service Unavailable'
-    }
+  FA_UNAVAILABLE: {
+    err: 503,
+    msg: 'Service Unavailable'
+  }
 }; /**
     * err module.
     * @module err
@@ -390,33 +390,12 @@ Err.t = _locale2.default;
  * @return {String} final message
  */
 var errMsg = function errMsg(msg, opts) {
-    if (opts) {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-            for (var _iterator = Object.keys(opts)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var key = _step.value;
-
-                msg = msg.split('${' + key + '}').join(opts[key]);
-            }
-        } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
-                }
-            } finally {
-                if (_didIteratorError) {
-                    throw _iteratorError;
-                }
-            }
-        }
+  if (opts) {
+    for (var key in opts) {
+      msg = msg.split('${' + key + '}').join(opts[key]);
     }
-    return msg;
+  }
+  return msg;
 };
 
 /**
@@ -426,15 +405,15 @@ var errMsg = function errMsg(msg, opts) {
  * @return {Error}
  */
 var err = function err(E, opts) {
-    if (typeof E === 'string') {
-        E = {
-            msg: E
-        };
-    }
-    var msg = errMsg(E.msg, opts);
-    var e = new Error(msg);
-    E.err && (e.code = E.err);
-    return e;
+  if (typeof E === 'string') {
+    E = {
+      msg: E
+    };
+  }
+  var msg = errMsg(E.msg, opts);
+  var e = new Error(msg);
+  E.err && (e.code = E.err);
+  return e;
 };
 
 /**
@@ -444,13 +423,13 @@ var err = function err(E, opts) {
  * @return {boolean}
  */
 var enableErr = function enableErr(obj) {
-    var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Err';
+  var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Err';
 
-    if (obj[name]) return false;
-    obj[name] = Err;
-    obj.err = err;
-    obj.errMsg = errMsg;
-    return true;
+  if (obj[name]) return false;
+  obj[name] = Err;
+  obj.err = err;
+  obj.errMsg = errMsg;
+  return true;
 };
 
 /**
@@ -459,31 +438,31 @@ var enableErr = function enableErr(obj) {
  * @param {String} [name] name to bind
  */
 var disableErr = function disableErr(obj) {
-    var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Err';
+  var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Err';
 
-    if (!obj[name]) return;
-    delete obj[name];
-    delete obj.err;
-    delete obj.errMsg;
+  if (!obj[name]) return;
+  delete obj[name];
+  delete obj.err;
+  delete obj.errMsg;
 };
 
 var $ = {
-    Err: Err,
-    errMsg: errMsg,
-    err: err,
-    enableErr: enableErr,
-    disableErr: disableErr
+  Err: Err,
+  errMsg: errMsg,
+  err: err,
+  enableErr: enableErr,
+  disableErr: disableErr
 };
 
 if (typeof global !== 'undefined' && global) {
-    global.jm || (global.jm = {});
-    var jm = global.jm;
-    if (!jm.enableErr) {
-        enableErr(jm);
-        for (var key in $) {
-            jm[key] = $[key];
-        }
+  global.jm || (global.jm = {});
+  var jm = global.jm;
+  if (!jm.enableErr) {
+    enableErr(jm);
+    for (var key in $) {
+      jm[key] = $[key];
     }
+  }
 }
 
 exports.default = $;
@@ -493,12 +472,12 @@ module.exports = exports['default'];
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 exports.default = function (msg, lng) {
-    if (!lng || !lngs[lng]) return null;
-    return lngs[lng][msg];
+  if (!lng || !lngs[lng]) return null;
+  return lngs[lng][msg];
 };
 
 var _zh_CN = require('./zh_CN');
@@ -508,42 +487,41 @@ var _zh_CN2 = _interopRequireDefault(_zh_CN);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var lngs = {
-    zh_CN: _zh_CN2.default
-};
+  zh_CN: _zh_CN2.default
 
-/**
- * translate
- * @param {string} msg - msg to be translate
- * @param {string} lng - language
- * @return {String | null}
- */
-;
+  /**
+   * translate
+   * @param {string} msg - msg to be translate
+   * @param {string} lng - language
+   * @return {String | null}
+   */
+};;
 module.exports = exports['default'];
 },{"./zh_CN":5}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 exports.default = {
-    'Success': '成功',
-    'Fail': '失败',
-    'System Error': '系统错误',
-    'Network Error': '网络错误',
-    'Parameter Error': '参数错误',
-    'Busy': '忙',
-    'Time Out': '超时',
-    'Abort': '中止',
-    'Not Ready': '未准备好',
-    'Not Exists': '不存在',
-    'Already Exists': '已存在',
-    'OK': 'OK',
-    'Bad Request': '错误请求',
-    'Unauthorized': '未验证',
-    'Forbidden': '无权限',
-    'Not Found': '未找到',
-    'Internal Server Error': '服务器内部错误',
-    'Service Unavailable': '无效服务'
+  'Success': '成功',
+  'Fail': '失败',
+  'System Error': '系统错误',
+  'Network Error': '网络错误',
+  'Parameter Error': '参数错误',
+  'Busy': '忙',
+  'Time Out': '超时',
+  'Abort': '中止',
+  'Not Ready': '未准备好',
+  'Not Exists': '不存在',
+  'Already Exists': '已存在',
+  'OK': 'OK',
+  'Bad Request': '错误请求',
+  'Unauthorized': '未验证',
+  'Forbidden': '无权限',
+  'Not Found': '未找到',
+  'Internal Server Error': '服务器内部错误',
+  'Service Unavailable': '无效服务'
 };
 module.exports = exports['default'];
 },{}],6:[function(require,module,exports){
