@@ -1,6 +1,4 @@
-import error from 'jm-err'
 import enableAjax from './enableajax'
-let Err = error.Err
 
 let $ = {};
 (function ($) {
@@ -14,11 +12,17 @@ let $ = {};
 
     each: function (o, fn, ctx) {
       if (o === null) return
-      if (nativeForEach && o.forEach === nativeForEach) { o.forEach(fn, ctx) } else if (o.length === +o.length) {
-        for (let i = 0, l = o.length; i < l; i++) { if (i in o && fn.call(ctx, o[i], i, o) === breaker) return }
+      if (nativeForEach && o.forEach === nativeForEach) {
+        o.forEach(fn, ctx)
+      } else if (o.length === +o.length) {
+        for (let i = 0, l = o.length; i < l; i++) {
+          if (i in o && fn.call(ctx, o[i], i, o) === breaker) return
+        }
       } else {
         for (let key in o) {
-          if (hasOwnProperty.call(o, key)) { if (fn.call(ctx, o[key], key, o) === breaker) return }
+          if (hasOwnProperty.call(o, key)) {
+            if (fn.call(ctx, o[key], key, o) === breaker) return
+          }
         }
       }
     }
@@ -41,11 +45,7 @@ let $ = {};
       case 'text/javascript':
       case 'application/javascript':
       case 'application/x-javascript':
-        try {
-          return JSON.parse(xhr.responseText)
-        } catch (e) {
-          return Err.FAIL
-        }
+        return JSON.parse(xhr.responseText)
       default:
         return xhr.responseText
     }
@@ -54,7 +54,9 @@ let $ = {};
     let kvps = []
     let regEx = /%20/g
     for (let k in o) {
-      if (o[k] != undefined && o[k] != null) { kvps.push(encodeURIComponent(k).replace(regEx, '+') + '=' + encodeURIComponent(o[k].toString()).replace(regEx, '+')) }
+      if (o[k] != undefined && o[k] != null) {
+        kvps.push(encodeURIComponent(k).replace(regEx, '+') + '=' + encodeURIComponent(o[k].toString()).replace(regEx, '+'))
+      }
     }
     return kvps.join('&')
   }
